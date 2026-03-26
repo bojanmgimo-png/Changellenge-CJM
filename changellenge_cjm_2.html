@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changellenge >> — CJM участника хакатона</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #D0021B;
+    --black: #111111;
+    --mid: #333333;
+    --gray: #888888;
+    --light: #f0f0f0;
+    --white: #ffffff;
+    --border: #e5e5e5;
+    --boosters: #0f7a4a;
+    --boosters-light: #e6f4ed;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: #f7f6f3; color: var(--black); min-height: 100vh; }
+
+  header { background: var(--black); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 700; color: var(--white); }
+  .logo span { color: var(--red); }
+  .header-tag { font-size: 11px; font-weight: 500; color: #666; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .hero { background: var(--black); padding: 56px 48px 64px; border-bottom: 3px solid var(--red); position: relative; overflow: hidden; }
+  .hero::before { content: 'CJM'; position: absolute; right: -20px; top: -10px; font-family: 'Unbounded', sans-serif; font-size: 180px; font-weight: 700; color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; }
+  .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+  .hero h1 { font-family: 'Unbounded', sans-serif; font-size: clamp(22px, 3.5vw, 38px); font-weight: 700; color: var(--white); line-height: 1.15; max-width: 640px; margin-bottom: 16px; }
+  .hero p { font-size: 15px; color: #999; max-width: 520px; line-height: 1.6; }
+
+  .platform-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 48px; display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+  .platform-pill { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--mid); }
+  .platform-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .platform-dot.green { background: var(--boosters); }
+  .integration-note { margin-left: auto; font-size: 11px; color: #aaa; }
+
+  .integration-banner { background: linear-gradient(135deg, #0a1f10 0%, #0a1520 100%); border-left: 4px solid var(--boosters); margin: 0 48px; border-radius: 0 0 12px 12px; padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+  .integration-badge { background: var(--boosters); color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+  .integration-text { font-size: 12px; color: #aaa; line-height: 1.6; }
+  .integration-text strong { color: #ddd; }
+
+  main { max-width: 920px; margin: 0 auto; padding: 48px 48px 80px; }
+
+  .track-switcher { display: flex; gap: 8px; margin-bottom: 36px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 6px; }
+  .track-btn { flex: 1; padding: 10px 16px; border: none; border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; background: transparent; color: var(--gray); text-align: center; line-height: 1.4; }
+  .track-btn span { display: block; font-size: 10px; font-weight: 400; opacity: 0.7; margin-top: 2px; }
+  .track-btn.active { background: var(--black); color: var(--white); }
+  .track-btn.active span { opacity: 0.6; }
+  .track-btn.boosters-btn.active { background: var(--boosters); color: var(--white); }
+
+  .steps-panel { display: none; }
+  .steps-panel.visible { display: block; }
+  .steps { display: flex; flex-direction: column; }
+  .step-wrapper { display: flex; flex-direction: column; opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  .step-wrapper:nth-child(1){animation-delay:.05s} .step-wrapper:nth-child(2){animation-delay:.12s}
+  .step-wrapper:nth-child(3){animation-delay:.19s} .step-wrapper:nth-child(4){animation-delay:.26s}
+  .step-wrapper:nth-child(5){animation-delay:.33s} .step-wrapper:nth-child(6){animation-delay:.40s}
+
+  .step-connector { width: 2px; height: 28px; margin-left: 27px; background: var(--border); }
+
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 20px; cursor: pointer; }
+  .step-number { width: 56px; height: 56px; border-radius: 50%; background: var(--step-color); display: flex; align-items: center; justify-content: center; font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 700; color: white; flex-shrink: 0; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 16px rgba(0,0,0,.15); position: relative; z-index: 1; }
+  .step:hover .step-number { transform: scale(1.08); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .step-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 24px; transition: all .25s; border-left: 4px solid var(--step-color); }
+  .step:hover .step-card { box-shadow: 0 8px 32px rgba(0,0,0,.08); transform: translateX(4px); }
+  .step.active .step-card { box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+
+  .step-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .step-meta { flex: 1; }
+  .step-tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--step-color); background: color-mix(in srgb, var(--step-color) 10%, transparent); padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
+  .step-title { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.3; margin-bottom: 4px; }
+  .step-subtitle { font-size: 13px; color: var(--gray); line-height: 1.5; }
+  .step-toggle { width: 28px; height: 28px; border-radius: 50%; background: var(--light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; margin-top: 2px; }
+  .step-toggle svg { transition: transform .25s; color: var(--gray); }
+  .step.active .step-toggle { background: var(--step-color); }
+  .step.active .step-toggle svg { transform: rotate(180deg); color: white; }
+
+  .step-details { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .step.active .step-details { display: block; }
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .detail-block { background: #f9f9f7; border-radius: 8px; padding: 14px 16px; }
+  .detail-block.full { grid-column: 1 / -1; }
+  .detail-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+  .detail-items { display: flex; flex-direction: column; gap: 6px; }
+  .detail-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--mid); line-height: 1.4; }
+  .detail-item::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--step-color); flex-shrink: 0; margin-top: 5px; }
+
+  .platform-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .platform-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid currentColor; }
+  .platform-badge.changellenge { color: var(--red); }
+  .platform-badge.boosters { color: var(--boosters); background: var(--boosters-light); }
+
+  /* Boosters track special */
+  .boosters-track-banner { background: linear-gradient(135deg, #0a2718 0%, #0a1a28 100%); border: 1.5px solid var(--boosters); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 20px; }
+  .boosters-icon { width: 48px; height: 48px; background: var(--boosters); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; }
+  .boosters-track-title { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .boosters-track-desc { font-size: 12px; color: #8ab; line-height: 1.6; }
+  .boosters-track-desc strong { color: #aed; }
+
+  .pipeline { display: flex; align-items: stretch; margin: 16px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .pipeline-step { flex: 1; padding: 14px 12px; background: var(--white); position: relative; text-align: center; border-right: 1px solid var(--border); }
+  .pipeline-step:last-child { border-right: none; }
+  .pipeline-step.cl { border-top: 3px solid var(--red); }
+  .pipeline-step.bs { border-top: 3px solid var(--boosters); background: #f6fdf9; }
+  .pipeline-step::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 14px; z-index: 2; background: var(--white); padding: 2px; }
+  .pipeline-step.bs::after { background: #f6fdf9; }
+  .pipeline-step:last-child::after { display: none; }
+  .pipeline-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+  .pipeline-label.red { color: var(--red); }
+  .pipeline-label.green { color: var(--boosters); }
+  .pipeline-text { font-size: 11px; color: var(--gray); line-height: 1.4; }
+
+  .legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .legend-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .legend-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-size: 15px; }
+  .legend-title { font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+  .legend-text { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  footer { background: var(--black); padding: 24px 48px; display: flex; align-items: center; justify-content: space-between; }
+  .footer-logo { font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 700; color: #666; }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-size: 11px; color: #555; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    header, .platform-bar, main, footer { padding-left: 20px; padding-right: 20px; }
+    .hero { padding: 40px 20px 48px; }
+    .integration-banner { margin: 0 20px; }
+    .details-grid { grid-template-columns: 1fr; }
+    .legend { grid-template-columns: 1fr; }
+    .track-switcher { flex-direction: column; }
+    .pipeline { flex-direction: column; }
+    .pipeline-step { border-right: none; border-bottom: 1px solid var(--border); }
+    .pipeline-step::after { content: '↓'; right: auto; left: 50%; top: auto; bottom: -12px; transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CHANGELLENGE <span>>></span></div>
+  <div class="header-tag">Платформа для чемпионатов и хакатонов</div>
+</header>
+
+<div class="hero">
+  <div class="hero-label">Customer Journey Map</div>
+  <h1>Путь участника на платформе Changellenge</h1>
+  <p>Полный маршрут от регистрации до финала. Нажмите на любой этап, чтобы увидеть детали.</p>
+</div>
+
+<div class="platform-bar">
+  <div class="platform-pill"><div class="platform-dot"></div> Changellenge.com — треки 1 и 2 (файловая сдача)</div>
+  <div class="platform-pill"><div class="platform-dot green"></div> Boosters.pro — трек 3 (ML / автоскоринг)</div>
+  <div class="integration-note">⚡ Бесшовная интеграция двух платформ</div>
+</div>
+
+<div class="integration-banner">
+  <div class="integration-badge">Архитектура</div>
+  <div class="integration-text">
+    <strong>Changellenge.com — единый фронт для всех трёх треков.</strong>
+    Треки 1 и 2: решения загружаются напрямую. Трек 3: Changellenge.com принимает сабмит и передаёт на <strong>Boosters.pro</strong> для автоматического скоринга. Участник работает в одном интерфейсе и не замечает переключения между платформами.
+  </div>
+</div>
+
+<main>
+  <div class="track-switcher">
+    <button class="track-btn active" onclick="showTrack('common')">
+      Общий путь участника
+      <span>Все 3 трека · регистрация → финал</span>
+    </button>
+    <button class="track-btn" onclick="showTrack('track12')">
+      Треки 1 и 2
+      <span>Changellenge.com · файловая сдача</span>
+    </button>
+    <button class="track-btn boosters-btn" onclick="showTrack('track3')">
+      Трек 3 — ML / CV
+      <span>Boosters.pro · автоскоринг</span>
+    </button>
+  </div>
+
+  <div class="steps-panel visible" id="panel-common">
+    <div class="steps" id="steps-common"></div>
+  </div>
+
+  <div class="steps-panel" id="panel-track12">
+    <div class="steps" id="steps-track12"></div>
+  </div>
+
+  <div class="steps-panel" id="panel-track3">
+    <div class="boosters-track-banner">
+      <div class="boosters-icon">⚡</div>
+      <div>
+        <div class="boosters-track-title">Трек 3 — Смарт-сортировка (CV / ML)</div>
+        <div class="boosters-track-desc">
+          Участник работает в интерфейсе <strong>Changellenge.com</strong> — загружает сабмит через привычный личный кабинет.
+          За кулисами <strong>Boosters.pro</strong> автоматически считает метрику на датасете Ozon Tech и обновляет лидерборд.
+          Интеграция полностью прозрачна: один интерфейс, один аккаунт, всё в одном ЛК.
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step cl">
+        <div class="pipeline-label red">Changellenge.com</div>
+        <div class="pipeline-text">Участник загружает файл предсказаний через ЛК</div>
+      </div>
+      <div class="pipeline-step bs">
+        <div class="pipeline-label green">Boosters.pro</div>
+        <div class="pipeline-text">Автоскоринг по датасету Ozon Tech → метрика</div>
+      </div>
+      <div class="pipeline-step cl">
+        <div class="pipeline-label red">Changellenge.com</div>
+        <div class="pipeline-text">Скор и место в лидерборде отображаются в ЛК</div>
+      </div>
+    </div>
+
+    <div class="steps" id="steps-track3"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-card">
+      <div class="legend-icon" style="background:#fff0f0">📋</div>
+      <div class="legend-title">Личный кабинет</div>
+      <div class="legend-text">Все действия участника — через ЛК: профиль, команда, задание, загрузка решения, лидерборд</div>
+    </div>
+    <div class="legend-card">
+      <div class="legend-icon" style="background:#f0fff4">⚡</div>
+      <div class="legend-title">Автоматизация</div>
+      <div class="legend-text">Подбор команды, автоскоринг ML-трека, уведомления — без ручной работы организатора</div>
+    </div>
+    <div class="legend-card">
+      <div class="legend-icon" style="background:#f0f4ff">🎨</div>
+      <div class="legend-title">Брендирование</div>
+      <div class="legend-text">Обе платформы кастомизируются под визуальную стилистику хакатона Ozon Tech Robotics</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-logo">CHANGELLENGE <span>>></span></div>
+  <div class="footer-text">changellenge.com · boosters.pro</div>
+</footer>
+
+<script>
+const commonSteps = [
+  { num:1, color:'#D0021B', tag:'до старта', title:'Регистрация', subtitle:'Создание аккаунта и личного кабинета участника',
+    participant:['Переход на лендинг хакатона через CTA «Я хочу» или «Регистрация»','Заполнение профиля: имя, университет, город, специальность','Выбор трека участия (1, 2 или 3)','Автоматическое создание личного кабинета','Email-подтверждение регистрации'],
+    organizer:['Сбор базы участников в реальном времени','Сегментация по трекам автоматически','Брендированная страница в стилистике Ozon Tech Robotics'],
+    platforms:['changellenge'] },
+  { num:2, color:'#1a6b3c', tag:'до старта', title:'Формирование команды', subtitle:'Приглашение участников или автоподбор тиммейтов',
+    participant:['Вариант 1: пригласить 2–4 участников по email прямо из ЛК','Вариант 2: зарегистрироваться одному — система подберёт тиммейтов','Вариант 3: Telegram-чат для самостоятельного поиска команды','Редактирование данных команды: название, состав, роли'],
+    organizer:['Автоматическое формирование команд по релевантным критериям','Ноль ручных операций по командообразованию','Настраиваемые критерии подбора: специальность, город, опыт'],
+    platforms:['changellenge'] },
+  { num:3, color:'#0a4fa8', tag:'старт · все треки', title:'Получение задания', subtitle:'Открытие кейса или ML-задачи из личного кабинета',
+    participant:['Email-уведомление: хакатон начался, задание доступно','Треки 1 и 2: скачивание кейса и материалов из ЛК','Трек 3: открытие ML-задачи и датасета от Ozon Tech в ЛК','Тур 1: кейс по 3 трека на хакатон от Ozon Tech','Доступ к учебным материалам и документации'],
+    organizer:['Синхронный старт для всех треков в заданное время','Контролируемый доступ: задание открывается по расписанию','Актуальная версия задания всегда доступна в ЛК'],
+    platforms:['changellenge','boosters'] },
+  { num:4, color:'#8b4a00', tag:'онлайн-этап', title:'Работа и сдача решения', subtitle:'Треки 1–2: загрузка архива · Трек 3: автоскоринг сабмитов',
+    participant:['Треки 1 и 2: загрузка решения в виде zip-архива через ЛК','Трек 3: загрузка файла предсказаний → мгновенный скор','Трек 3: живой лидерборд обновляется после каждого сабмита','История загрузок и сабмитов доступна в ЛК','Возможность обновить решение до дедлайна'],
+    organizer:['Треки 1–2: структурированная сдача, экспорт для экспертов','Трек 3: автоматическая проверка — эксперты не проверяют сабмиты вручную','Техподдержка 08:00–02:00 мск в ходе хакатона'],
+    platforms:['changellenge','boosters'] },
+  { num:5, color:'#6b1a7a', tag:'онлайн', title:'Предварительная защита идей', subtitle:'Онлайн-отбор команд для участия в финале',
+    participant:['Уведомление в ЛК и на email о прохождении этапа','Онлайн-защита решения перед экспертами Ozon Tech','Результаты отборочного этапа через платформу','Трек 3: итоговый лидерборд формируется автоматически'],
+    organizer:['Управление расписанием защит через платформу','Уведомления финалистов — автоматически','Прозрачная система отбора без субъективности'],
+    platforms:['changellenge','boosters'] },
+  { num:6, color:'#1a4a6b', tag:'29 апреля · офлайн · Москва', title:'Финал', subtitle:'Очная защита, кейсы Ozon Tech',
+    participant:['Офлайн-защита перед топ-экспертами Ozon Tech','Кейсы Ozon Tech по всем трекам','Объявление победителей и призёров','Нетворкинг с экспертами и другими финалистами'],
+    organizer:['Брендированное пространство финала в стилистике Ozon Tech Robotics','Итоговый список финалистов формируется платформой'],
+    platforms:['changellenge'] },
+];
+
+const track12Steps = [
+  { num:1, color:'#D0021B', tag:'changellenge.com', title:'Регистрация и профиль', subtitle:'Личный кабинет участника на Changellenge.com',
+    participant:['Регистрация на лендинге хакатона Ozon Tech','Заполнение профиля и данных команды','Скачивание задания кейса из личного кабинета'],
+    organizer:['База участников в реальном времени','Автоматическая сегментация по треку'],
+    platforms:['changellenge'] },
+  { num:2, color:'#0a4fa8', tag:'changellenge.com', title:'Получение кейса', subtitle:'Тур 1: кейс по 3 трека на хакатон от Ozon Tech',
+    participant:['Открытие кейса и дополнительных материалов из ЛК','Скачивание задания одним архивом','Доступ к справочным материалам от Ozon Tech'],
+    organizer:['Синхронный старт для участников треков 1 и 2','Актуальная версия задания всегда в ЛК'],
+    platforms:['changellenge'] },
+  { num:3, color:'#8b4a00', tag:'changellenge.com', title:'Загрузка решения', subtitle:'Zip-архив через личный кабинет, автофиксация времени',
+    participant:['Загрузка решения в виде zip-архива через ЛК','Автоматическая фиксация времени и даты сдачи','История загрузок доступна в ЛК','Возможность обновить решение до дедлайна'],
+    organizer:['Ноль ручного сбора решений — всё в одном месте','Экспорт архива решений для экспертов','Структурированная сдача: один формат для всех команд'],
+    platforms:['changellenge'] },
+  { num:4, color:'#1a4a6b', tag:'финал · 29 апреля · Москва', title:'Финал', subtitle:'Очная защита, кейсы Ozon Tech',
+    participant:['Уведомление о прохождении через платформу и email','Очная защита в Москве, 29 апреля','Кейсы Ozon Tech по трекам 1 и 2'],
+    organizer:['Финалисты и их решения — в одном месте на платформе','Брендированный финал в стилистике Ozon Tech Robotics'],
+    platforms:['changellenge'] },
+];
+
+const track3Steps = [
+  { num:1, color:'#0f7a4a', tag:'changellenge.com', title:'Регистрация и профиль', subtitle:'Единый вход — тот же ЛК, что и для треков 1 и 2',
+    participant:['Регистрация через Changellenge.com — один аккаунт для всех треков','Заполнение профиля: специальность ML/CV, стек, опыт','Формирование команды или одиночное участие'],
+    organizer:['Единая база участников всех трёх треков','Автоматическая сегментация участников трека 3'],
+    platforms:['changellenge'] },
+  { num:2, color:'#0f7a4a', tag:'changellenge.com + boosters.pro', title:'Получение ML-задачи и датасета', subtitle:'Датасет от Ozon Tech открывается в ЛК по расписанию',
+    participant:['Открытие ML-задачи (Computer Vision) из ЛК Changellenge.com','Скачивание датасета от Ozon Tech через ЛК','Описание задачи, метрики и baseline — в ЛК'],
+    organizer:['Датасет размечен командой Ozon Tech, загружен на Boosters.pro','Синхронный старт для всех участников трека 3'],
+    platforms:['changellenge','boosters'] },
+  { num:3, color:'#0f7a4a', tag:'boosters.pro · автоскоринг', title:'Загрузка сабмита и автоскоринг', subtitle:'Участник грузит через ЛК → Boosters считает метрику мгновенно',
+    participant:['Загрузка файла предсказаний (сабмита) через ЛК Changellenge.com','Boosters.pro автоматически считает метрику на датасете Ozon Tech','Скор отображается в ЛК мгновенно — никакого ожидания','История всех сабмитов с результатами в ЛК','Количество сабмитов в сутки ограничено — настраивается'],
+    organizer:['Эксперты Ozon Tech не проверяют сабмиты вручную','Платформа считает метрику автоматически 24/7','Техподдержка 08:00–02:00 мск в ходе хакатона'],
+    platforms:['changellenge','boosters'] },
+  { num:4, color:'#0f7a4a', tag:'boosters.pro · лидерборд', title:'Живой лидерборд', subtitle:'Рейтинг обновляется после каждого сабмита в реальном времени',
+    participant:['Публичный лидерборд виден всем участникам в ЛК','Позиция команды обновляется после каждой загрузки','Видны лучший скор и история попыток','Соревновательная атмосфера удерживает участников весь онлайн-этап'],
+    organizer:['Прозрачный рейтинг без субъективной оценки','Итоговый лидерборд — автоматически для отбора в финал','Экспорт результатов для организатора'],
+    platforms:['boosters'] },
+  { num:5, color:'#1a4a6b', tag:'финал · 29 апреля · Москва', title:'Финал', subtitle:'Очная защита, кейсы Ozon Tech',
+    participant:['Уведомление о попадании в финал через платформу и email','Очная защита ML-решения перед экспертами Ozon Tech','Объявление победителей трека 3'],
+    organizer:['Финалисты трека 3 определены автоматически по лидерборду','Все результаты и решения доступны организатору'],
+    platforms:['changellenge','boosters'] },
+];
+
+function renderSteps(data, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  data.forEach((s, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'step-wrapper';
+    const badges = s.platforms.map(p =>
+      p === 'changellenge'
+        ? `<span class="platform-badge changellenge">● Changellenge.com</span>`
+        : `<span class="platform-badge boosters">● Boosters.pro</span>`
+    ).join('');
+    const step = document.createElement('div');
+    step.className = 'step';
+    step.style.setProperty('--step-color', s.color);
+    step.innerHTML = `
+      <div class="step-number">${s.num}</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-meta">
+            <div class="step-tag">${s.tag}</div>
+            <div class="step-title">${s.title}</div>
+            <div class="step-subtitle">${s.subtitle}</div>
+          </div>
+          <div class="step-toggle">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="step-details">
+          <div class="details-grid">
+            <div class="detail-block">
+              <div class="detail-label">Что делает участник</div>
+              <div class="detail-items">${s.participant.map(t=>`<div class="detail-item">${t}</div>`).join('')}</div>
+            </div>
+            <div class="detail-block">
+              <div class="detail-label">Что получает организатор</div>
+              <div class="detail-items">${s.organizer.map(t=>`<div class="detail-item">${t}</div>`).join('')}</div>
+            </div>
+            <div class="detail-block full">
+              <div class="detail-label">Платформа</div>
+              <div class="platform-badges">${badges}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    step.addEventListener('click', () => {
+      const was = step.classList.contains('active');
+      container.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      if (!was) step.classList.add('active');
+    });
+    wrapper.appendChild(step);
+    if (i < data.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = 'step-connector';
+      wrapper.appendChild(conn);
+    }
+    container.appendChild(wrapper);
+  });
+  const first = container.querySelector('.step');
+  if (first) first.click();
+}
+
+function showTrack(track) {
+  document.querySelectorAll('.steps-panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + track).classList.add('visible');
+  const idx = {common:0, track12:1, track3:2}[track];
+  document.querySelectorAll('.track-btn')[idx].classList.add('active');
+}
+
+renderSteps(commonSteps,  'steps-common');
+renderSteps(track12Steps, 'steps-track12');
+renderSteps(track3Steps,  'steps-track3');
+</script>
+</body>
+</html>
